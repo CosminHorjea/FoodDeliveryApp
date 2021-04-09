@@ -1,9 +1,10 @@
 import java.util.Scanner;
 
 public class App {
+    private static Service services;
 
     public static void main(String[] args) throws Exception {
-        Service services = new Service();
+        services = new Service();
 
         Scanner in = new Scanner(System.in);
         int option;
@@ -53,6 +54,15 @@ public class App {
             case 13:
                 services.showMenu();
                 break;
+            case 14:
+                services.logoutUser();
+                break;
+            case 15:
+                services.showOrederToDeliver();
+                break;
+            case 16:
+                services.completeCurrentDelivery();
+                break;
             default:
                 System.out.print("Comanda incorecta!");
             }
@@ -62,19 +72,24 @@ public class App {
     private static void showCommands() {
         System.out.println("Folositi comenzile urmatoare: ");
         System.out.println("0:Exit");
-        System.out.println("1:Adauga restaurant");
-        System.out.println("2:Afisare restaurante");
-        System.out.println("3:Adaugare User");
-        System.out.println("4:Afisare Useri");
-        System.out.println("5:Adauga Produs");
-        System.out.println("6:Afiseaza Produse");
-        System.out.println("7:Adauga produs in meniu");
-        System.out.println("8:Log in");
-        System.out.println("9:Adauga produs in cos");
-        System.out.println("10:Arata cos");
-        System.out.println("11:Plaseaza comanda");
-        System.out.println("12.Afiseaza comenzi");
-        System.out.println("13.Afiseaza Meniu");
+        if (!services.isLoggedIn()) {
+            System.out.println("8:Log in");
+            System.out.println("3:Inregistrare User");
+        } else {
+            System.out.println("14: Log Out");
+            System.out.println("2:Afisare restaurante");
+            System.out.println("13.Afiseaza Meniu");
+            if (services.isCustomerLoggedIn()) {
+                System.out.println("9:Adauga produs in cos");
+                System.out.println("10:Arata cos");
+                System.out.println("11:Plaseaza comanda");
+                System.out.println("12.Afiseaza comenzi");
+            }
+            if (services.isDeliveryLoggedIn()) {
+                System.out.println("15.Afiseaza comanda curenta");
+                System.out.println("16.Completeaza comanda curenta");
+            }
+        }
 
     }
 }

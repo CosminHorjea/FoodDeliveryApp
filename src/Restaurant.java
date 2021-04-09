@@ -26,8 +26,9 @@ public class Restaurant {
   }
 
   public void showMenu() {
+    int i = 1;
     for (MenuItem mi : menu) {
-      System.out.println(mi.getItem().toString() + "Pret: " + mi.getPrice());
+      System.out.println(i++ + ": " + mi.getItem().toString() + "Pret: " + mi.getPrice());
     }
   }
 

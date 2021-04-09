@@ -56,8 +56,9 @@ public class Service {
   }
 
   public void showAllRestaurants() {
+    int i = 1;
     for (Restaurant r : restaurants) {
-      System.out.println(r.toString());
+      System.out.println(i++ + ": " + r.toString());
     }
   }
 
@@ -223,5 +224,26 @@ public class Service {
 
   public void logoutUser() {
     this.currentUser = null;
+  }
+
+  public boolean isLoggedIn() {
+    return currentUser != null;
+  }
+
+  public boolean isDeliveryLoggedIn() {
+    return currentUser instanceof DeliveryUser;
+  }
+
+  public boolean isCustomerLoggedIn() {
+    return currentUser instanceof CustomerUser;
+  }
+
+  public void showOrederToDeliver() {
+    for (Order o : orders) {
+      if (o.getDelivery().getId() == currentUser.getId()) {
+        System.out.println(o.toString());
+        return;
+      }
+    }
   }
 }
