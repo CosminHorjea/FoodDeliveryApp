@@ -1,6 +1,3 @@
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class User {
   protected int id;
@@ -12,13 +9,28 @@ public class User {
   User(String username, String password, String phoneNumber) {
     this.id = ++usersCount;
     this.username = username;
-    try {
-      MessageDigest digest = MessageDigest.getInstance("SHA-256");
-      this.password = digest.digest(password.getBytes(StandardCharsets.UTF_8)).toString();
-    } catch (NoSuchAlgorithmException e) {
-      System.out.println("Error when hashing password");
-    }
+    this.password = Integer.toString(password.hashCode());
     this.phoneNumber = phoneNumber;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public boolean verifyPassword(String passwordToTry) {
+    passwordToTry = Integer.toString(passwordToTry.hashCode());
+    if (this.password.equals(passwordToTry)) {
+      return true;
+    }
+    return false;
+  }
+
+  public String getPassword() {
+    return password;
   }
 
   @Override

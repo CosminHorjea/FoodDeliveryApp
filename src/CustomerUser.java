@@ -1,13 +1,13 @@
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.TreeSet;
 
 public class CustomerUser extends User {
   // ?? MAybe do a cart class
-  List<CartItem> cart;
+  TreeSet<CartItem> cart;
 
   public CustomerUser(String username, String password, String phoneNumber) {
     super(username, password, phoneNumber);
-    this.cart = new ArrayList<CartItem>();
+    this.cart = new TreeSet<>(new ComparatorMenuItem());
   }
 
   public void addItemToCart(MenuItem menuItem) {
@@ -20,6 +20,10 @@ public class CustomerUser extends User {
     cart.add(new CartItem(menuItem, 1));
   }
 
+  public void emptyCart() {
+    this.cart.clear();
+  }
+
   public float getCartPrice() {
     float totalPrice = 0.0f;
     for (CartItem c : cart) {
@@ -28,7 +32,7 @@ public class CustomerUser extends User {
     return totalPrice;
   }
 
-  public List<CartItem> getCart() {
+  public TreeSet<CartItem> getCart() {
     return cart;
   }
 }

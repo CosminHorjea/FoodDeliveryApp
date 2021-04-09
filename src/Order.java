@@ -1,28 +1,28 @@
-import java.util.List;
+import java.util.TreeSet;
 
 /**
  * Order
  */
 public class Order {
   private int OrderID;
-  private List<CartItem> items;
+  private TreeSet<CartItem> items;
   private boolean delivered = false;
   private CustomerUser customer;
   private DeliveryUser delivery;
   static int ordersCount = 0;
 
-  public Order(List<CartItem> cart, CustomerUser customer, DeliveryUser delivery) {
+  public Order(TreeSet<CartItem> cart, CustomerUser customer, DeliveryUser delivery) {
     this.OrderID = ++ordersCount;
     this.setItems(cart);
     this.setCustomer(customer);
     this.setDelivery(delivery);
   }
 
-  public List<CartItem> getItems() {
+  public TreeSet<CartItem> getItems() {
     return items;
   }
 
-  public void setItems(List<CartItem> items) {
+  public void setItems(TreeSet<CartItem> items) {
     this.items = items;
   }
 

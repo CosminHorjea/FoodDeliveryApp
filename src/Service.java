@@ -28,17 +28,18 @@ public class Service {
     restaurants
         .add(new Restaurant("Oscar", "feluri de mancare inedite pentru o experienta culinara de neuitat", "Muscel"));
     users.add(new DeliveryUser("Popescu", "Ana are mere", "073123213", "PH-44-ION"));
-    users.add(new CustomerUser("Andrei Ion", "test1234", "073123413"));
-    users.add(new CustomerUser("Moise ALexandru", "GTAV", "073121213"));
+    users.add(new CustomerUser("Andrei_Ion", "test1234", "073123413"));
+    users.add(new CustomerUser("Moise_Alexandru", "GTAV", "073121213"));
+    users.add(new CustomerUser("test", "test", "073121213"));
     items.add(new FoodItem("Pizza Capriciosa", "Pizza cu ciuperci si sunca", false));
     items.add(new FoodItem("Burger de vita", "Burger cu cartofi prajiti acompaniati de sos", false));
     items.add(new DrinkItem("Green Apple", "Un cocktail cu martini servit cu felii de mar", true));
     restaurants.get(0).addInMenu(items.get(0), 12.99f, 0.05f);
     restaurants.get(1).addInMenu(items.get(2), 2.99f, 0.07f);
     restaurants.get(2).addInMenu(items.get(1), 25.99f, 0.15f);
-    currentUser = users.get(2);
-    addItemToCart();
-    showCartItems();
+    // currentUser = users.get(2);
+    // addItemToCart();
+    // showCartItems();
 
   }
 
@@ -135,17 +136,29 @@ public class Service {
     restaurants.get(selectedRestaurant).addInMenu(items.get(selectedItem), price, 0.0f);
   }
 
+  public void showMenu() {
+    Scanner sc = new Scanner(System.in);
+    System.out.println("Alegeti restaurantul pentru care doriti sa vizualizari meniul:");
+    for (Restaurant r : restaurants) {
+      System.out.println(r.toString());
+    }
+    int restaurantSelection = sc.nextInt();
+    Restaurant restaurant = restaurants.get(restaurantSelection - 1);
+    restaurant.showMenu();
+
+  }
+
   public void addItemToCart() {
     Scanner sc = new Scanner(System.in);
     System.out.println("Selectati restaurantul de unde doriti sa comandati :");
     showAllRestaurants();
     int selectedRestaurant = sc.nextInt();
-    Restaurant restaurant = restaurants.get(selectedRestaurant);
+    Restaurant restaurant = restaurants.get(selectedRestaurant - 1);
     System.out.println("Selectati produsul din meniu :");
     restaurant.showMenu();
     List<MenuItem> menu = restaurant.getMenu();
     int selectedItem = sc.nextInt();
-    ((CustomerUser) currentUser).addItemToCart(menu.get(selectedItem));// TODO this is ugly
+    ((CustomerUser) currentUser).addItemToCart(menu.get(selectedItem - 1));// TODO this is ugly
   }
 
   public void showCartItems() {
@@ -160,21 +173,24 @@ public class Service {
       return;
     DeliveryUser dUser = null;
     for (User u : users) {
-      if (u instanceof DeliveryUser && ((DeliveryUser) u).isDelivering()) {
+      if (u instanceof DeliveryUser && !((DeliveryUser) u).isDelivering()) {
         ((DeliveryUser) u).assignOrder();
         dUser = (DeliveryUser) u;
         break;
       }
     }
-    if (dUser == null)
+    if (dUser == null) {
+      System.out.print("Nu sunt livratori disponibil in aces moment, te rugam sa plasezi comanda mai tarziu!");
       return;
+    }
     Order orderToBePlaced = new Order(((CustomerUser) currentUser).getCart(), (CustomerUser) currentUser, dUser);
     orders.add(orderToBePlaced);
+    ((CustomerUser) currentUser).emptyCart();
   }
 
   public void showOrdersForUser() {
     for (Order order : orders) {
-      if (order.getCustomer() == currentUser) {
+      if (order.getCustomer().getId() == currentUser.getId()) {
         System.out.println(order.toString());
       }
     }
@@ -184,5 +200,28 @@ public class Service {
     if (!(currentUser instanceof DeliveryUser))
       return;
     ((DeliveryUser) currentUser).completeOrder();
+  }
+
+  public void loginUser() {
+    Scanner sc = new Scanner(System.in);
+    System.out.println("Introduceti Username-ul");
+    String username = sc.nextLine();
+    System.out.println("Introduceti parola");
+    String password = sc.nextLine();
+    for (User u : users) {
+      if (u.getUsername().equals(username)) {
+        if (u.verifyPassword(password)) {
+          System.out.println("SUnteti logat ca " + username);
+          currentUser = u;
+          return;
+        }
+      }
+    }
+    System.out.println("Nu am gasit userul sau parola a fost introdusa incorect");
+
+  }
+
+  public void logoutUser() {
+    this.currentUser = null;
   }
 }

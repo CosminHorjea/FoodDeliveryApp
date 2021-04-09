@@ -30,6 +30,10 @@ public class MenuItem {
     return price;
   }
 
+  public float getDiscountedPrice() {
+    return price - price * discount;
+  }
+
   public void setPrice(float price) {
     this.price = price;
   }

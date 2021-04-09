@@ -34,6 +34,6 @@ public abstract class Item {
 
   @Override
   public String toString() {
-    return "Item ID: " + itemID + " Item Name: " + itemName + "\n";
+    return "Produs: " + itemName + "\n";
   }
 }

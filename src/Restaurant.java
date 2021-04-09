@@ -27,8 +27,7 @@ public class Restaurant {
 
   public void showMenu() {
     for (MenuItem mi : menu) {
-      System.out.println(mi.getItem().toString());
-      System.out.println(mi.getPrice());
+      System.out.println(mi.getItem().toString() + "Pret: " + mi.getPrice());
     }
   }
 
@@ -38,7 +37,6 @@ public class Restaurant {
 
   @Override
   public String toString() {
-    return "ID: " + restaurantID + " Restaurant " + this.name + "\nDescriere: " + description + " \nAdresa: "
-        + this.location + "\n";
+    return "Restaurant " + this.name + "\nDescriere: " + description + " \nAdresa: " + this.location + "\n";
   }
 }
