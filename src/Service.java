@@ -9,12 +9,14 @@ public class Service {
   private List<Restaurant> restaurants;
   private List<User> users;
   private List<Item> items;
+  private List<Order> orders;
   private User currentUser = null;
 
   Service() {
     this.restaurants = new ArrayList<Restaurant>();
     this.users = new ArrayList<User>();
     this.items = new ArrayList<Item>();
+    this.orders = new ArrayList<Order>();
 
     addDummyData();
   }
@@ -151,5 +153,36 @@ public class Service {
     for (CartItem c : ((CustomerUser) currentUser).getCart()) {
       System.out.println(c.getItem().toString() + " | " + c.getQuantity() + " buc");
     }
+  }
+
+  public void placeOrder() {
+    if (!(currentUser instanceof CustomerUser))
+      return;
+    DeliveryUser dUser = null;
+    for (User u : users) {
+      if (u instanceof DeliveryUser && ((DeliveryUser) u).isDelivering()) {
+        ((DeliveryUser) u).assignOrder();
+        dUser = (DeliveryUser) u;
+        break;
+      }
+    }
+    if (dUser == null)
+      return;
+    Order orderToBePlaced = new Order(((CustomerUser) currentUser).getCart(), (CustomerUser) currentUser, dUser);
+    orders.add(orderToBePlaced);
+  }
+
+  public void showOrdersForUser() {
+    for (Order order : orders) {
+      if (order.getCustomer() == currentUser) {
+        System.out.println(order.toString());
+      }
+    }
+  }
+
+  public void completeCurrentDelivery() {
+    if (!(currentUser instanceof DeliveryUser))
+      return;
+    ((DeliveryUser) currentUser).completeOrder();
   }
 }
