@@ -5,20 +5,26 @@ import java.util.Scanner;
 @SuppressWarnings({ "resource" })
 
 public class Service {
-
+  private static Service instance = null;
   private List<Restaurant> restaurants;
   private List<User> users;
   private List<Item> items;
   private List<Order> orders;
   private User currentUser = null;
 
-  Service() {
+  private Service() {
     this.restaurants = new ArrayList<Restaurant>();
     this.users = new ArrayList<User>();
     this.items = new ArrayList<Item>();
     this.orders = new ArrayList<Order>();
 
     addDummyData();
+  }
+
+  public static Service getInstance() {
+    if (instance == null)
+      instance = new Service();
+    return instance;
   }
 
   private void addDummyData() {
@@ -38,7 +44,10 @@ public class Service {
     restaurants.get(1).addInMenu(items.get(2), 2.99f, 0.07f);
     restaurants.get(2).addInMenu(items.get(1), 25.99f, 0.15f);
     // currentUser = users.get(2);
-    // addItemToCart();
+    // ((CustomerUser)
+    // currentUser).addItemToCart(restaurants.get(0).getMenu().get(0));
+    // ((CustomerUser)
+    // currentUser).addItemToCart(restaurants.get().getMenu().get(0));
     // showCartItems();
 
   }
@@ -140,8 +149,9 @@ public class Service {
   public void showMenu() {
     Scanner sc = new Scanner(System.in);
     System.out.println("Alegeti restaurantul pentru care doriti sa vizualizari meniul:");
+    int i = 1;
     for (Restaurant r : restaurants) {
-      System.out.println(r.toString());
+      System.out.println(i++ + " " + r.toString());
     }
     int restaurantSelection = sc.nextInt();
     Restaurant restaurant = restaurants.get(restaurantSelection - 1);
@@ -150,6 +160,8 @@ public class Service {
   }
 
   public void addItemToCart() {
+    if (!(currentUser instanceof CustomerUser))
+      return;
     Scanner sc = new Scanner(System.in);
     System.out.println("Selectati restaurantul de unde doriti sa comandati :");
     showAllRestaurants();
@@ -159,7 +171,17 @@ public class Service {
     restaurant.showMenu();
     List<MenuItem> menu = restaurant.getMenu();
     int selectedItem = sc.nextInt();
-    ((CustomerUser) currentUser).addItemToCart(menu.get(selectedItem - 1));// TODO this is ugly
+    MenuItem mi = menu.get(selectedItem - 1);
+    if (mi.getItem() instanceof DrinkItem) {
+      if (((DrinkItem) mi.getItem()).isContainsAlcohool()) {
+        System.out.println("Aveti peste 18 ani? DA/NU");
+        sc.nextLine();
+        String response = sc.nextLine();
+        if (response.equals("NU"))
+          return;
+      }
+    }
+    ((CustomerUser) currentUser).addItemToCart(mi);
   }
 
   public void showCartItems() {
@@ -172,6 +194,10 @@ public class Service {
   public void placeOrder() {
     if (!(currentUser instanceof CustomerUser))
       return;
+    if (((CustomerUser) currentUser).getCart().size() == 0) {
+      System.out.println("Cosul este gol");
+      return;
+    }
     DeliveryUser dUser = null;
     for (User u : users) {
       if (u instanceof DeliveryUser && !((DeliveryUser) u).isDelivering()) {
@@ -212,7 +238,7 @@ public class Service {
     for (User u : users) {
       if (u.getUsername().equals(username)) {
         if (u.verifyPassword(password)) {
-          System.out.println("SUnteti logat ca " + username);
+          System.out.println("Sunteti logat ca " + username);
           currentUser = u;
           return;
         }

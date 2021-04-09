@@ -2,7 +2,6 @@
 import java.util.TreeSet;
 
 public class CustomerUser extends User {
-  // ?? MAybe do a cart class
   TreeSet<CartItem> cart;
 
   public CustomerUser(String username, String password, String phoneNumber) {

@@ -4,10 +4,10 @@ public class MenuItem {
   private Item item;
   private float price;
   private float discount;
-  static int menuCount = 1;
+  static int menuCount = 0;
 
   public MenuItem(Item item, float price) {
-    this.setItem(item);
+    this.item = item;
     this.MenuItemID = ++menuCount;
     this.price = price;
   }
@@ -16,6 +16,7 @@ public class MenuItem {
     this.setItem(item);
     this.setPrice(price);
     this.discount = discount;
+    this.MenuItemID = ++menuCount;
   }
 
   public Item getItem() {
