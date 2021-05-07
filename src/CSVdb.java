@@ -3,6 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,17 +39,21 @@ public class CSVdb {
   }
 
   public void addItemToCart(int id, int menuItemID) {
+    AtomicInteger added = new AtomicInteger(0);
+
     try {
       System.out.println("ID: " + id);
       List<String> values = Files.readAllLines(Paths.get("data/cart.csv")).stream().map(line -> {
         String[] row = line.split(",");
         if (row[0].equals(Integer.toString(id))) {
           line = line.concat("," + menuItemID);
-          System.out.println("Am adaugat");
+          added.set(1);
         }
         return line;
       }).collect(Collectors.toList());
-      System.out.println(values);
+      if (added.intValue() == 0) {
+        values.add(id + "," + menuItemID);
+      }
       Files.write(Paths.get("data/cart.csv"), values);
     } catch (IOException e) {
       e.printStackTrace();
@@ -66,4 +71,22 @@ public class CSVdb {
       e.printStackTrace();
     }
   }
+
+  public void markOrderAsCompleted(int orderID) {
+    try {
+      List<String> values = Files.readAllLines(Paths.get("data/orders.csv")).stream().map(line -> {
+        String[] row = line.split(",");
+        if (row[1].equals(Integer.toString(orderID)) && row[row.length - 1].equals("false")) {
+          row[row.length - 1] = "true";
+          return Stream.of(row).collect(Collectors.joining(","));
+        }
+        return line;
+      }).collect(Collectors.toList());
+      System.out.println(values);
+      Files.write(Paths.get("data/orders.csv"), values);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
 }

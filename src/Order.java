@@ -18,6 +18,14 @@ public class Order {
     this.setDelivery(delivery);
   }
 
+  public boolean isDelivered() {
+    return delivered;
+  }
+
+  public void setDelivered(boolean delivered) {
+    this.delivered = delivered;
+  }
+
   public TreeSet<CartItem> getItems() {
     return items;
   }
@@ -43,7 +51,7 @@ public class Order {
   }
 
   public void completeOrder() {
-    delivered = true;
+    setDelivered(true);
   }
 
   public int getOrderID() {

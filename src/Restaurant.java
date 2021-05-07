@@ -33,6 +33,10 @@ public class Restaurant {
     menu.add(itemToAddInMenu);
   }
 
+  public void addInMenu(MenuItem itemToAddInMenu) {
+    menu.add(itemToAddInMenu);
+  }
+
   public void showMenu() {
     int i = 1;
     for (MenuItem mi : menu) {

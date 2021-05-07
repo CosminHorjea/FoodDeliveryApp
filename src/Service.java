@@ -66,15 +66,17 @@ public class Service {
     // loading the menu
     db.readDataFromCSV("data/menu.csv").stream().forEach(line -> {
       String[] values = line.split(",");
-      menuItems.add(new MenuItem(items.get(Integer.parseInt(values[1])), Float.parseFloat(values[2]),
-          Float.parseFloat(values[3])));
+      MenuItem mi = new MenuItem(items.get(Integer.parseInt(values[1])), Float.parseFloat(values[2]),
+          Float.parseFloat(values[3]));
+      menuItems.add(mi);
+      restaurants.get(Integer.parseInt(values[0])).addInMenu(mi);
     });
 
-    db.readDataFromCSV("data/menu.csv").stream().forEach(line -> {
-      String[] values = line.split(",");
-      restaurants.get(Integer.parseInt(values[0])).addInMenu(items.get(Integer.parseInt(values[1])),
-          Float.parseFloat(values[2]), Float.parseFloat(values[3]));
-    });
+    // db.readDataFromCSV("data/menu.csv").stream().forEach(line -> {
+    // String[] values = line.split(",");
+    // restaurants.get(Integer.parseInt(values[0])).addInMenu(items.get(Integer.parseInt(values[1])),
+    // Float.parseFloat(values[2]), Float.parseFloat(values[3]));
+    // });
 
     // restaurants.get(0).addInMenu(items.get(0), 12.99f, 0.05f);
     // restaurants.get(1).addInMenu(items.get(2), 2.99f, 0.07f);
@@ -333,6 +335,11 @@ public class Service {
     if (!(currentUser instanceof DeliveryUser))
       return;
     ((DeliveryUser) currentUser).completeOrder();
+    for (Order o : orders) {
+      if (o.getDelivery().getId() == currentUser.getId()) {
+        db.markOrderAsCompleted(o.getOrderID());
+      }
+    }
     audit.writeLog("Livratorul " + currentUser.getUsername() + " a completat o comanda");
   }
 
@@ -374,7 +381,7 @@ public class Service {
 
   public void showOrederToDeliver() {
     for (Order o : orders) {
-      if (o.getDelivery().getId() == currentUser.getId()) {
+      if (o.getDelivery().getId() == currentUser.getId() && !o.isDelivered()) {
         System.out.println(o.toString());
         return;
       }
