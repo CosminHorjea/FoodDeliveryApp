@@ -7,7 +7,7 @@ public abstract class Item {
   static int itemsCount = 0;
 
   public Item(String itemName, String itemDescription) {
-    this.itemID = ++itemsCount;
+    this.itemID = itemsCount++;
     this.setItemName(itemName);
     this.setItemDescription(itemDescription);
   }

@@ -8,7 +8,7 @@ public class MenuItem {
 
   public MenuItem(Item item, float price) {
     this.item = item;
-    this.MenuItemID = ++menuCount;
+    this.MenuItemID = menuCount++;
     this.price = price;
   }
 
@@ -16,7 +16,7 @@ public class MenuItem {
     this.setItem(item);
     this.setPrice(price);
     this.discount = discount;
-    this.MenuItemID = ++menuCount;
+    this.MenuItemID = menuCount++;
   }
 
   public Item getItem() {

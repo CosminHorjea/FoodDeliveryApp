@@ -7,7 +7,7 @@ public class User {
   static int usersCount = 0;
 
   User(String username, String password, String phoneNumber) {
-    this.id = ++usersCount;
+    this.id = usersCount++;
     this.username = username;
     this.password = Integer.toString(password.hashCode());
     this.phoneNumber = phoneNumber;

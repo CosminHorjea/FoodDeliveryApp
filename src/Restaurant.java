@@ -13,7 +13,7 @@ public class Restaurant {
   }
 
   public Restaurant(String name, String description, String location) {
-    this.restaurantID = ++countRestaurants;
+    this.restaurantID = countRestaurants++;
     this.location = location;
     this.description = description;
     this.name = name;
@@ -21,7 +21,7 @@ public class Restaurant {
   }
 
   public Restaurant(String[] values) {
-    this.restaurantID = ++countRestaurants;
+    this.restaurantID = countRestaurants++;
     this.name = values[0];
     this.description = values[1];
     this.location = values[2];

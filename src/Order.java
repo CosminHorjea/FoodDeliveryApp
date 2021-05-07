@@ -12,7 +12,7 @@ public class Order {
   static int ordersCount = 0;
 
   public Order(TreeSet<CartItem> cart, CustomerUser customer, DeliveryUser delivery) {
-    this.OrderID = ++ordersCount;
+    this.OrderID = ordersCount++;
     this.setItems(cart);
     this.setCustomer(customer);
     this.setDelivery(delivery);

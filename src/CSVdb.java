@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -16,6 +17,7 @@ public class CSVdb {
 
   public void writeDataToCSV(String[] data, String pathToCSV) {
     try {
+      Files.write(Paths.get(pathToCSV), "\n".getBytes(), StandardOpenOption.APPEND);
       Files.write(Paths.get(pathToCSV), (Stream.of(data).collect(Collectors.joining(",")).getBytes()),
           StandardOpenOption.APPEND);
     } catch (Exception e) {
@@ -33,5 +35,35 @@ public class CSVdb {
     }
     return null;
 
+  }
+
+  public void addItemToCart(int id, int menuItemID) {
+    try {
+      System.out.println("ID: " + id);
+      List<String> values = Files.readAllLines(Paths.get("data/cart.csv")).stream().map(line -> {
+        String[] row = line.split(",");
+        if (row[0].equals(Integer.toString(id))) {
+          line = line.concat("," + menuItemID);
+          System.out.println("Am adaugat");
+        }
+        return line;
+      }).collect(Collectors.toList());
+      System.out.println(values);
+      Files.write(Paths.get("data/cart.csv"), values);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void eraseCart(int id) {
+    try {
+      System.out.println("ID: " + id);
+      List<String> values = Files.readAllLines(Paths.get("data/cart.csv")).stream()
+          .filter(line -> !line.split(",")[0].equals(Integer.toString(id))).collect(Collectors.toList());
+      System.out.println(values);
+      Files.write(Paths.get("data/cart.csv"), values);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }

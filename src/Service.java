@@ -70,6 +70,7 @@ public class Service {
           Float.parseFloat(values[2]), Float.parseFloat(values[3]));
       menuItems.add(new MenuItem(items.get(Integer.parseInt(values[1])), Float.parseFloat(values[2]),
           Float.parseFloat(values[3])));
+
     });
 
     // restaurants.get(0).addInMenu(items.get(0), 12.99f, 0.05f);
@@ -265,6 +266,8 @@ public class Service {
     }
     ((CustomerUser) currentUser).addItemToCart(mi);
     audit.writeLog(currentUser.getUsername() + " a adaugat " + mi.getItem().getItemName() + " in cos");
+    db.addItemToCart(currentUser.getId(), mi.getMenuItemID());
+
   }
 
   public void showCartItems() {
@@ -297,7 +300,21 @@ public class Service {
     Order orderToBePlaced = new Order(((CustomerUser) currentUser).getCart(), (CustomerUser) currentUser, dUser);
     orders.add(orderToBePlaced);
     audit.writeLog("Comanda cu id-ul " + orderToBePlaced.getOrderID() + " a fost plasata");
+
+    List<String> data = new ArrayList<String>();
+    data.add(Integer.toString(currentUser.getId()));
+    data.add(Integer.toString(dUser.getId()));
+    for (CartItem c : ((CustomerUser) currentUser).getCart()) {
+      data.add(Integer.toString(c.getItem().getMenuItemID()));
+    }
+
+    data.add("false");
+    String[] dataArr = new String[data.size()];
+    data.toArray(dataArr);
+    db.writeDataToCSV(dataArr, "data/orders.csv");
     ((CustomerUser) currentUser).emptyCart();
+    db.eraseCart(currentUser.getId());
+
   }
 
   public void showOrdersForUser() {
