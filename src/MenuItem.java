@@ -53,7 +53,7 @@ public class MenuItem {
 
   @Override
   public String toString() {
-    return "Item: " + item.getItemName() + " Pret: " + price;
+    return "Item: " + item.getItemName() + " Pret: " + price + " ID: " + MenuItemID;
   }
 
 }

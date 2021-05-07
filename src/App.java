@@ -49,6 +49,9 @@ public class App {
                 case 11:
                     services.completeCurrentDelivery();
                     break;
+                case 20:
+                    services.showMenuItems();
+                    break;
                 default:
                     System.out.print("Comanda incorecta!");
             }
