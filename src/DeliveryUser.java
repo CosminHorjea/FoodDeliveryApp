@@ -7,6 +7,11 @@ public class DeliveryUser extends User {
     this.licensePlate = licensePlate;
   }
 
+  public DeliveryUser(String[] values) {
+    super(values[0], values[1], values[2]);
+    this.licensePlate = values[3];
+  }
+
   public boolean isDelivering() {
     return isDelivering;
   }

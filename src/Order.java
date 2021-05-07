@@ -46,6 +46,10 @@ public class Order {
     delivered = true;
   }
 
+  public int getOrderID() {
+    return OrderID;
+  }
+
   @Override
   public String toString() {
     String s = "";

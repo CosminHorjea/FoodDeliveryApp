@@ -12,6 +12,17 @@ public abstract class Item {
     this.setItemDescription(itemDescription);
   }
 
+  public static Item createItem(String[] values) {
+    Item item;
+    if (values.length == 3) {
+      item = new FoodItem(values);
+    } else {
+      item = new DrinkItem(values);
+    }
+    return item;
+
+  }
+
   public String getItemDescription() {
     return itemDescription;
   }

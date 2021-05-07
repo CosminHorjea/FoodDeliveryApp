@@ -20,6 +20,14 @@ public class Restaurant {
     menu = new ArrayList<MenuItem>();
   }
 
+  public Restaurant(String[] values) {
+    this.restaurantID = ++countRestaurants;
+    this.name = values[0];
+    this.description = values[1];
+    this.location = values[2];
+    menu = new ArrayList<MenuItem>();
+  }
+
   public void addInMenu(Item item, float price, float discount) {
     MenuItem itemToAddInMenu = new MenuItem(item, price, discount);
     menu.add(itemToAddInMenu);

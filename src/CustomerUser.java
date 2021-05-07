@@ -9,6 +9,11 @@ public class CustomerUser extends User {
     this.cart = new TreeSet<>(new ComparatorMenuItem());
   }
 
+  public CustomerUser(String[] values) {
+    super(values[0], values[1], values[2]);
+    this.cart = new TreeSet<>(new ComparatorMenuItem());
+  }
+
   public void addItemToCart(MenuItem menuItem) {
     for (CartItem c : cart) {
       if (c.getItem().getMenuItemID() == menuItem.getMenuItemID()) {

@@ -6,6 +6,15 @@ public class FoodItem extends Item {
     this.setVegan(isVegan);
   }
 
+  public FoodItem(String[] values) {
+    super(values[0], values[1]);
+    if (values[2].equals("true")) {
+      isVegan = true;
+    } else {
+      isVegan = false;
+    }
+  }
+
   public boolean isVegan() {
     return isVegan;
   }

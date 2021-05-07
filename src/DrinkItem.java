@@ -6,6 +6,11 @@ public class DrinkItem extends Item {
     this.setContainsAlcohool(containsAlcohool);
   }
 
+  public DrinkItem(String[] values) {
+    super(values[0], values[1]);
+    this.containsAlcohool = values[2].equals("true");
+  }
+
   public boolean isContainsAlcohool() {
     return containsAlcohool;
   }

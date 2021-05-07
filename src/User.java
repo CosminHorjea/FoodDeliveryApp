@@ -13,6 +13,16 @@ public class User {
     this.phoneNumber = phoneNumber;
   }
 
+  public static User createUser(String[] values) {
+    User user;
+    if (values.length == 3) {
+      user = new CustomerUser(values);
+    } else {
+      user = new DeliveryUser(values);
+    }
+    return user;
+  }
+
   public int getId() {
     return id;
   }

@@ -12,44 +12,45 @@ public class App {
             showCommands();
             option = in.nextInt();
             switch (option) {
-            case 0:
-                in.close();
-                return;
-            case 1:
-                services.loginUser();
-                break;
-            case 2:
-                services.addUser();
-                break;
-            case 3:
-                services.logoutUser();
-                break;
-            case 4:
-                services.showAllRestaurants();
-                break;
-            case 5:
-                services.showMenu();
-                break;
-            case 6:
-                services.addItemToCart();
-                break;
-            case 7:
-                services.showCartItems();
-                break;
-            case 8:
-                services.placeOrder();
-                break;
-            case 9:
-                services.showOrdersForUser();
-                break;
-            case 10:
-                services.showOrederToDeliver();
-                break;
-            case 11:
-                services.completeCurrentDelivery();
-                break;
-            default:
-                System.out.print("Comanda incorecta!");
+                case 0:
+                    in.close();
+                    services.closeAudit();
+                    return;
+                case 1:
+                    services.loginUser();
+                    break;
+                case 2:
+                    services.addUser();
+                    break;
+                case 3:
+                    services.logoutUser();
+                    break;
+                case 4:
+                    services.showAllRestaurants();
+                    break;
+                case 5:
+                    services.showMenu();
+                    break;
+                case 6:
+                    services.addItemToCart();
+                    break;
+                case 7:
+                    services.showCartItems();
+                    break;
+                case 8:
+                    services.placeOrder();
+                    break;
+                case 9:
+                    services.showOrdersForUser();
+                    break;
+                case 10:
+                    services.showOrederToDeliver();
+                    break;
+                case 11:
+                    services.completeCurrentDelivery();
+                    break;
+                default:
+                    System.out.print("Comanda incorecta!");
             }
         }
     }

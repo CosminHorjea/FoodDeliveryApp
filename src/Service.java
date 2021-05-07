@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 @SuppressWarnings({ "resource" })
 
@@ -10,15 +12,21 @@ public class Service {
   private List<User> users;
   private List<Item> items;
   private List<Order> orders;
+  private List<MenuItem> menuItems;
   private User currentUser = null;
+  private Audit audit;
+  private CSVdb db;
 
   private Service() {
     this.restaurants = new ArrayList<Restaurant>();
     this.users = new ArrayList<User>();
     this.items = new ArrayList<Item>();
     this.orders = new ArrayList<Order>();
+    this.menuItems = new ArrayList<MenuItem>();
+    db = CSVdb.getInstance();
+    loadDataFromCSV();
+    audit = Audit.getInstance();
 
-    addDummyData();
   }
 
   public static Service getInstance() {
@@ -27,28 +35,87 @@ public class Service {
     return instance;
   }
 
-  private void addDummyData() {
-    restaurants.add(new Restaurant("Capriciosa", "Local de familie cu mancare buna si mancare accesibila", "Campina"));
-    restaurants
-        .add(new Restaurant("Bon Apetit", "Cele mai bune cocktailuri din oras la o priveliste de vis", "Scorteni"));
-    restaurants
-        .add(new Restaurant("Oscar", "feluri de mancare inedite pentru o experienta culinara de neuitat", "Muscel"));
-    users.add(new DeliveryUser("Popescu", "Ana are mere", "073123213", "PH-44-ION"));
-    users.add(new CustomerUser("Andrei_Ion", "test1234", "073123413"));
-    users.add(new CustomerUser("Moise_Alexandru", "GTAV", "073121213"));
-    users.add(new CustomerUser("test", "test", "073121213"));
-    items.add(new FoodItem("Pizza Capriciosa", "Pizza cu ciuperci si sunca", false));
-    items.add(new FoodItem("Burger de vita", "Burger cu cartofi prajiti acompaniati de sos", false));
-    items.add(new DrinkItem("Green Apple", "Un cocktail cu martini servit cu felii de mar", true));
-    restaurants.get(0).addInMenu(items.get(0), 12.99f, 0.05f);
-    restaurants.get(1).addInMenu(items.get(2), 2.99f, 0.07f);
-    restaurants.get(2).addInMenu(items.get(1), 25.99f, 0.15f);
+  private void loadDataFromCSV() {
+    // restaurants.add(new Restaurant("Capriciosa", "Local de familie cu mancare
+    // buna si mancare accesibila", "Campina"));
+    // restaurants
+    // .add(new Restaurant("Bon Apetit", "Cele mai bune cocktailuri din oras la o
+    // priveliste de vis", "Scorteni"));
+    // restaurants
+    // .add(new Restaurant("Oscar", "feluri de mancare inedite pentru o experienta
+    // culinara de neuitat", "Muscel"));
+    restaurants = (db.readDataFromCSV("data/restaurants.csv")).stream().map(line -> new Restaurant(line.split(",")))
+        .collect(Collectors.toList());
+    // users.add(new DeliveryUser("Popescu", "Ana are mere", "073123213",
+    // "PH-44-ION"));
+    // users.add(new CustomerUser("Andrei_Ion", "test1234", "073123413"));
+    // users.add(new CustomerUser("Moise_Alexandru", "GTAV", "073121213"));
+    // users.add(new CustomerUser("test", "test", "073121213"));
+    // loading users
+    users = db.readDataFromCSV("data/users.csv").stream().map(line -> User.createUser(line.split(",")))
+        .collect(Collectors.toList());
+    // items.add(new FoodItem("Pizza Capriciosa", "Pizza cu ciuperci si sunca",
+    // false));
+    // items.add(new FoodItem("Burger de vita", "Burger cu cartofi prajiti
+    // acompaniati de sos", false));
+    // items.add(new DrinkItem("Green Apple", "Un cocktail cu martini servit cu
+    // felii de mar", true));
+    // loading items
+    items = db.readDataFromCSV("data/items.csv").stream().map(line -> Item.createItem(line.split(",")))
+        .collect(Collectors.toList());
+    // loading the menu
+    db.readDataFromCSV("data/menu.csv").stream().forEach(line -> {
+      String[] values = line.split(",");
+      restaurants.get(Integer.parseInt(values[0])).addInMenu(items.get(Integer.parseInt(values[1])),
+          Float.parseFloat(values[2]), Float.parseFloat(values[3]));
+      menuItems.add(new MenuItem(items.get(Integer.parseInt(values[1])), Float.parseFloat(values[2]),
+          Float.parseFloat(values[3])));
+    });
+
+    // restaurants.get(0).addInMenu(items.get(0), 12.99f, 0.05f);
+    // restaurants.get(1).addInMenu(items.get(2), 2.99f, 0.07f);
+    // restaurants.get(2).addInMenu(items.get(1), 25.99f, 0.15f);
+    // String[] data = { "Scorpion", "Shaowrma cu de toate", "Mogador" };
+    // db.writeDataToCSV(data, "data/restaurants.csv");
+
+    // Creation of each users cart
+    db.readDataFromCSV("data/cart.csv").stream().forEach(line -> {
+      String[] values = line.split(",");
+      CustomerUser userToMakeCart = (CustomerUser) users.get(Integer.parseInt(values[0]));
+      for (int i = 1; i < values.length; i++) {
+        userToMakeCart.addItemToCart(menuItems.get(Integer.parseInt(values[i])));
+      }
+    });
+
     // currentUser = users.get(2);
     // ((CustomerUser)
     // currentUser).addItemToCart(restaurants.get(0).getMenu().get(0));
     // ((CustomerUser)
     // currentUser).addItemToCart(restaurants.get().getMenu().get(0));
     // showCartItems();
+
+    // reading all orders
+    db.readDataFromCSV("data/orders.csv").stream().forEach(line -> {
+      String[] values = line.split(",");
+      TreeSet<CartItem> auxCart = new TreeSet<>(new ComparatorMenuItem());
+      CustomerUser customer = (CustomerUser) users.get(Integer.parseInt(values[0]));
+      DeliveryUser delivery = (DeliveryUser) users.get(Integer.parseInt(values[1]));
+      for (int i = 2; i < values.length - 1; i++) {
+        MenuItem item = menuItems.get(Integer.parseInt(values[i]));
+        for (CartItem c : auxCart) {
+          if (c.getItem().getMenuItemID() == item.getMenuItemID()) {
+            c.increaseQuantity();
+            continue;
+          }
+        }
+        auxCart.add(new CartItem(item, 1));
+      }
+      Order newOrder = new Order(auxCart, customer, delivery);
+      if (values[values.length - 1].equals("true")) {
+        newOrder.completeOrder();
+      }
+      orders.add(newOrder);
+    });
 
   }
 
@@ -62,6 +129,8 @@ public class Service {
     String location = sc.nextLine();
     Restaurant restaurant = new Restaurant(name, description, location);
     restaurants.add(restaurant);
+    db.writeDataToCSV(new String[] { name, description, location }, "data/restaurants.csv");
+    audit.writeLog("Restaurantul " + name + " a fost adaugat");
   }
 
   public void showAllRestaurants() {
@@ -69,6 +138,7 @@ public class Service {
     for (Restaurant r : restaurants) {
       System.out.println(i++ + ": " + r.toString());
     }
+    audit.writeLog("Au fost afisate toate restaurantele");
   }
 
   public void addUser() {
@@ -89,16 +159,20 @@ public class Service {
       System.out.print("Numar de inmatriculare: ");
       String licensePlate = sc.nextLine();
       userToAdd = new DeliveryUser(username, password, phoneNumber, licensePlate);
+      db.writeDataToCSV(new String[] { username, password, phoneNumber, licensePlate }, "data/users.csv");
     } else {
       userToAdd = new CustomerUser(username, password, phoneNumber);
+      db.writeDataToCSV(new String[] { username, password, phoneNumber }, "data/users.csv");
     }
     users.add(userToAdd);
+    audit.writeLog("Utilizatorul " + username + " a fost creat");
   }
 
   public void showUsers() {
     for (User user : users) {
       System.out.println(user.toString());
     }
+    audit.writeLog("Au fost afisati toti utilizatorii");
   }
 
   public void addItem() {
@@ -113,18 +187,23 @@ public class Service {
     Item itemToAdd;
     if (itemType == 1) {
       System.out.println("Produsul este vegan? DA/NU");
-      String raspuns = sc.nextLine();
-      itemToAdd = new FoodItem(itemName, itemDescription, raspuns.equals("DA"));
+      String response = sc.nextLine();
+      itemToAdd = new FoodItem(itemName, itemDescription, response.equals("DA"));
+      db.writeDataToCSV(new String[] { itemName, itemDescription, Boolean.toString(response.equals("DA")) },
+          "data/items.csv");
 
     } else if (itemType == 2) {
       System.out.println("Produsul contine alcool? DA/NU");
-      String raspuns = sc.nextLine();
-      itemToAdd = new DrinkItem(itemName, itemDescription, raspuns.equals("DA"));
+      String response = sc.nextLine();
+      itemToAdd = new DrinkItem(itemName, itemDescription, response.equals("DA"));
+      db.writeDataToCSV(new String[] { itemName, itemDescription, Boolean.toString(response.equals("DA")), "bautura" },
+          "data/items.csv");
     } else {
       System.out.println("Comanda invalida");
       return;
     }
     items.add(itemToAdd);
+    audit.writeLog("A fost adaugat produsul " + itemName);
 
   }
 
@@ -132,6 +211,7 @@ public class Service {
     for (Item i : items) {
       System.out.println(i.toString());
     }
+    audit.writeLog("Au fost afisate toate produsele");
   }
 
   public void addItemToMenu() {
@@ -143,6 +223,8 @@ public class Service {
     int selectedItem = sc.nextInt();
     System.out.println("Alegeti pretul :");
     float price = sc.nextFloat();
+    db.writeDataToCSV(new String[] { Integer.toString(selectedRestaurant), Integer.toString(selectedItem),
+        Float.toString(price), "0" }, "data/menu.csv");
     restaurants.get(selectedRestaurant).addInMenu(items.get(selectedItem), price, 0.0f);
   }
 
@@ -156,7 +238,7 @@ public class Service {
     int restaurantSelection = sc.nextInt();
     Restaurant restaurant = restaurants.get(restaurantSelection - 1);
     restaurant.showMenu();
-
+    audit.writeLog("A fost afisat meniul de la restaurantul " + restaurantSelection);
   }
 
   public void addItemToCart() {
@@ -182,6 +264,7 @@ public class Service {
       }
     }
     ((CustomerUser) currentUser).addItemToCart(mi);
+    audit.writeLog(currentUser.getUsername() + " a adaugat " + mi.getItem().getItemName() + " in cos");
   }
 
   public void showCartItems() {
@@ -189,6 +272,7 @@ public class Service {
     for (CartItem c : ((CustomerUser) currentUser).getCart()) {
       System.out.println(c.getItem().toString() + " | " + c.getQuantity() + " buc");
     }
+    audit.writeLog("Utilizatorul " + currentUser.getUsername() + " si-a afisat cosul de cumparaturi");
   }
 
   public void placeOrder() {
@@ -212,6 +296,7 @@ public class Service {
     }
     Order orderToBePlaced = new Order(((CustomerUser) currentUser).getCart(), (CustomerUser) currentUser, dUser);
     orders.add(orderToBePlaced);
+    audit.writeLog("Comanda cu id-ul " + orderToBePlaced.getOrderID() + " a fost plasata");
     ((CustomerUser) currentUser).emptyCart();
   }
 
@@ -221,12 +306,14 @@ public class Service {
         System.out.println(order.toString());
       }
     }
+    audit.writeLog("Utilizatorul " + currentUser.getUsername() + " a afisat comenzile");
   }
 
   public void completeCurrentDelivery() {
     if (!(currentUser instanceof DeliveryUser))
       return;
     ((DeliveryUser) currentUser).completeOrder();
+    audit.writeLog("Livratorul " + currentUser.getUsername() + " a completat o comanda");
   }
 
   public void loginUser() {
@@ -240,15 +327,16 @@ public class Service {
         if (u.verifyPassword(password)) {
           System.out.println("Sunteti logat ca " + username);
           currentUser = u;
+          audit.writeLog("Utilizatorul " + username + " s-a logat");
           return;
         }
       }
     }
     System.out.println("Nu am gasit userul sau parola a fost introdusa incorect");
-
   }
 
   public void logoutUser() {
+    audit.writeLog("Utilizatorul " + currentUser.getUsername() + " s-a delogat");
     this.currentUser = null;
   }
 
@@ -270,6 +358,14 @@ public class Service {
         System.out.println(o.toString());
         return;
       }
+    }
+  }
+
+  public void closeAudit() {
+    try {
+      audit.closeAudit();
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 }
