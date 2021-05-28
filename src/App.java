@@ -5,7 +5,7 @@ public class App {
 
     public static void main(String[] args) throws Exception {
         services = Service.getInstance();
-
+//        new LoginScreen();
         Scanner in = new Scanner(System.in);
         int option;
         while (true) {

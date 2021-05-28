@@ -5,6 +5,11 @@ public class FoodItem extends Item {
     super(itemName, itemDescription);
     this.setVegan(isVegan);
   }
+  public FoodItem(int id,String itemName, String itemDescription, boolean isVegan) {
+    super(id,itemName, itemDescription);
+    this.setVegan(isVegan);
+  }
+
 
   public FoodItem(String[] values) {
     super(values[0], values[1]);

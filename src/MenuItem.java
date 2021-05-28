@@ -11,12 +11,27 @@ public class MenuItem {
     this.MenuItemID = menuCount++;
     this.price = price;
   }
+  public MenuItem(int id,Item item, float price) {
+    this.item = item;
+    this.MenuItemID = id;
+    this.price = price;
+    if(id>menuCount)
+        menuCount= id;
+  }
 
   public MenuItem(Item item, float price, float discount) {
     this.setItem(item);
     this.setPrice(price);
     this.discount = discount;
     this.MenuItemID = menuCount++;
+  }
+  public MenuItem(int id,Item item, float price,float discount) {
+    this.item = item;
+    this.MenuItemID = id;
+    this.price = price;
+    this.discount = discount;
+    if(id>menuCount)
+      menuCount= id;
   }
 
   public Item getItem() {

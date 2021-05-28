@@ -3,6 +3,7 @@ import java.util.List;
 
 public class Restaurant {
   private int restaurantID;
+  private int id;
   private String name;
   private String description;
   private String location;
@@ -12,12 +13,23 @@ public class Restaurant {
   public Restaurant() {
   }
 
+
   public Restaurant(String name, String description, String location) {
     this.restaurantID = countRestaurants++;
     this.location = location;
     this.description = description;
     this.name = name;
     menu = new ArrayList<MenuItem>();
+  }
+  public Restaurant(int id, String name, String description, String location) {
+    this.restaurantID = id;
+    this.location = location;
+    this.description = description;
+    this.name = name;
+    menu = new ArrayList<MenuItem>();
+    if (restaurantID > countRestaurants){
+      countRestaurants = id;
+    }
   }
 
   public Restaurant(String[] values) {
@@ -46,6 +58,22 @@ public class Restaurant {
 
   public List<MenuItem> getMenu() {
     return this.menu;
+  }
+
+  public int getRestaurantID() {
+    return restaurantID;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public String getLocation() {
+    return location;
   }
 
   @Override

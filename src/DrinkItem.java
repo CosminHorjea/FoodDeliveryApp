@@ -5,6 +5,10 @@ public class DrinkItem extends Item {
     super(itemName, itemDescription);
     this.setContainsAlcohool(containsAlcohool);
   }
+  public DrinkItem(int id,String itemName, String itemDescription, boolean containsAlcohool) {
+    super(id,itemName, itemDescription);
+    this.setContainsAlcohool(containsAlcohool);
+  }
 
   public DrinkItem(String[] values) {
     super(values[0], values[1]);

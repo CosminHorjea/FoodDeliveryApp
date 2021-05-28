@@ -1,3 +1,5 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -8,6 +10,7 @@ import java.util.stream.Collectors;
 
 public class Service {
   private static Service instance = null;
+  private Connection connection;
   private List<Restaurant> restaurants;
   private List<User> users;
   private List<Item> items;
@@ -16,6 +19,7 @@ public class Service {
   private User currentUser = null;
   private Audit audit;
   private CSVdb db;
+  private Database dbDerby;
 
   private Service() {
     this.restaurants = new ArrayList<Restaurant>();
@@ -24,8 +28,24 @@ public class Service {
     this.orders = new ArrayList<Order>();
     this.menuItems = new ArrayList<MenuItem>();
     db = CSVdb.getInstance();
-    loadDataFromCSV();
     audit = Audit.getInstance();
+    try{
+      dbDerby = new Database();
+//      loadDataFromDB();
+      loadDataFromCSV();
+//      dbDerby.createTables();
+//      dbDerby.insertRestaurant(new Restaurant(2,"capri","campina","cel mai tare"));
+//      dbDerby.deleteRestaurant(new Restaurant(0,"capri","campina","cel mai tare"));
+//      restaurants = dbDerby.readRestaurants();
+//      System.out.println("Din db");
+//      for(Restaurant r : restaurants){
+//        System.out.println(r);
+//      }
+//      dbDerby.close();
+    }catch(Exception e){
+      e.printStackTrace();
+    }
+    boolean notFound = true;
 
   }
 
@@ -124,7 +144,16 @@ public class Service {
     });
 
   }
-
+  private void loadDataFromDB(){
+    try{
+//      this.users = dbDerby.readUser();
+//      this.restaurants = dbDerby.readRestaurants();
+//      this.items = dbDerby.readItems();
+//      this.menuItems = dbDerby.readMenuItems();
+    }catch (Exception e){
+      e.printStackTrace();
+    }
+  }
   public void addRestaurant() {
     Scanner sc = new Scanner(System.in);
     System.out.print("Nume restaurant: ");
@@ -168,7 +197,12 @@ public class Service {
       db.writeDataToCSV(new String[] { username, password, phoneNumber, licensePlate }, "data/users.csv");
     } else {
       userToAdd = new CustomerUser(username, password, phoneNumber);
-      db.writeDataToCSV(new String[] { username, password, phoneNumber }, "data/users.csv");
+//      db.writeDataToCSV(new String[] { username, password, phoneNumber }, "data/users.csv");
+      try{
+        dbDerby.insertUser(userToAdd);
+      }catch (Exception e){
+        e.printStackTrace();
+      }
     }
     users.add(userToAdd);
     audit.writeLog("Utilizatorul " + username + " a fost creat");
@@ -350,7 +384,10 @@ public class Service {
     System.out.println("Introduceti parola");
     String password = sc.nextLine();
     for (User u : users) {
-      if (u.getUsername().equals(username)) {
+      System.out.println("Username:"+u.getUsername());
+      System.out.println("Password:" + u.getPassword());
+      System.out.println("------");
+      if (u.getUsername().equalsIgnoreCase(username)) {
         if (u.verifyPassword(password)) {
           System.out.println("Sunteti logat ca " + username);
           currentUser = u;
@@ -391,6 +428,7 @@ public class Service {
   public void closeAudit() {
     try {
       audit.closeAudit();
+      dbDerby.close();
     } catch (Exception e) {
       e.printStackTrace();
     }

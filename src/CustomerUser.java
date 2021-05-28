@@ -4,6 +4,10 @@ import java.util.TreeSet;
 public class CustomerUser extends User {
   TreeSet<CartItem> cart;
 
+  public CustomerUser(int id,String username, String password, String phoneNumber) {
+    super(id,username, password, phoneNumber);
+    this.cart = new TreeSet<>(new ComparatorMenuItem());
+  }
   public CustomerUser(String username, String password, String phoneNumber) {
     super(username, password, phoneNumber);
     this.cart = new TreeSet<>(new ComparatorMenuItem());

@@ -29,7 +29,7 @@ public class Audit {
 
   public void writeLog(String message) {
     try {
-      fw.write(message + "," + (new Date()) + "\n");
+      fw.write(message + "," + (new Date())+"," + Thread.currentThread().getName() +"\n");
     } catch (IOException e) {
       e.printStackTrace();
     }

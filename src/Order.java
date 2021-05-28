@@ -17,7 +17,25 @@ public class Order {
     this.setCustomer(customer);
     this.setDelivery(delivery);
   }
-
+  public Order(int id,TreeSet<CartItem> cart, CustomerUser customer, DeliveryUser delivery) {
+    this.OrderID = id;
+    this.setItems(cart);
+    this.setCustomer(customer);
+    this.setDelivery(delivery);
+    if(id > ordersCount){
+      ordersCount = id;
+    }
+  }
+  public Order(int id,TreeSet<CartItem> cart, CustomerUser customer, DeliveryUser delivery,boolean delivered) {
+    this.OrderID = id;
+    this.setItems(cart);
+    this.setCustomer(customer);
+    this.setDelivery(delivery);
+    if(id > ordersCount){
+      ordersCount = id;
+    }
+    this.delivered= delivered;
+  }
   public boolean isDelivered() {
     return delivered;
   }

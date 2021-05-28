@@ -11,7 +11,14 @@ public abstract class Item {
     this.setItemName(itemName);
     this.setItemDescription(itemDescription);
   }
-
+  public Item(int id,String itemName, String itemDescription) {
+    this.itemID = id;
+    this.setItemName(itemName);
+    this.setItemDescription(itemDescription);
+    if(id > itemsCount){
+      itemsCount=id;
+    }
+  }
   public static Item createItem(String[] values) {
     Item item;
     if (values.length == 3) {
